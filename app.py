@@ -187,7 +187,7 @@ def get_chat_engine(file):
         
         reorder = LongContextReorder()
         # postprocessor = SimilarityPostprocessor(similarity_cutoff=0.7)
-        rerank = RankGPTRerank(top_n=5, llm=Anthropic(model="claude-3-haiku-20240307"))
+        rerank = RankGPTRerank(top_n=5, llm=OpenAI(model="gpt-3.5-turbo"))
       
         chat_engine = index.as_chat_engine('condense_plus_context',
                                           text_qa_prompt=text_qa_template,

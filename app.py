@@ -56,15 +56,8 @@ import pandas as pd
 import numpy as np
 import math
 import random
-import uuid
 from io import StringIO
-
-from langfuse import Langfuse
-from langfuse.llama_index import LlamaIndexCallbackHandler
-from streamlit_feedback import streamlit_feedback
-from llama_index.embeddings.anyscale import AnyscaleEmbedding
 from pypdf import PdfReader
-import utils
 
 for k, v in st.session_state.items():
     st.session_state[k] = v

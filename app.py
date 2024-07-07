@@ -234,8 +234,6 @@ if not os.environ['OPENAI_API_KEY']:
     st.markdown('Please Enter API Key')
 
 if st.session_state.uploaded_files and os.environ['OPENAI_API_KEY']:
-
-    st.sidebar.markdown(f'Uploaded Documents: \n{[file.name for file in st.session_state.uploaded_files]}')
     
     chat_engine = get_chat_engine(st.session_state.uploaded_files)
     

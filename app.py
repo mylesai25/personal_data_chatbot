@@ -214,16 +214,7 @@ def get_chat_engine(file):
 st.title("Personal Data Chatbot")
 
 st.sidebar.markdown("# Menu")
-st.sidebar.markdown('Please enter your API KEY and upload your document below to start the chatbot!')
-
-if st.sidebar.button("Clear Chat"):
-    st.session_state.messages = []
-    st.session_state.conversation = None
-    st.session_state.chat_history = None
-    st.session_state.file_name =  None
-    st.session_state.page = None
-    st.session_state.chat_engine = None
-
+st.sidebar.markdown('Please enter your API key and upload your document below to start the chatbot!')
 
 if 'index' not in st.session_state:
     st.session_state.index = None
@@ -235,6 +226,14 @@ if "uploaded_file" not in st.session_state:
 os.environ['OPENAI_API_KEY'] = st.sidebar.text_input('OpenAI API Key', type='password')
 
 st.session_state.uploaded_file = st.sidebar.file_uploader("Upload document", type=['docx', 'pdf'], accept_multiple_files=False)
+
+if st.sidebar.button("Clear Chat"):
+    st.session_state.messages = []
+    st.session_state.conversation = None
+    st.session_state.chat_history = None
+    st.session_state.file_name =  None
+    st.session_state.page = None
+    st.session_state.chat_engine = None
 
 if not st.session_state.uploaded_file:
     st.markdown("Please Upload Files in the Sidebar")

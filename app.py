@@ -73,9 +73,6 @@ mistral_api_key = os.environ['MISTRALAI_API_KEY']
 
 # Functions
 
-def is_overlapping(list1, list2):
-    return any(item in list2 for item in list1)
-
 def extract_text_from_pdf(pdf_path):
     """
     Function to extract all text from a PDF file.
@@ -216,34 +213,19 @@ def get_chat_engine(files):
 
 
 
-# Password
-st.session_state.password = "Br@ndf0lderAI"
 
 st.sidebar.markdown("# Menu")
-st.sidebar.markdown('Please enter your password and upload your DNA document(s) below to start the chatbot!')
+st.sidebar.markdown('Please enter your API KEY and upload your document below to start the chatbot!')
 
 if st.sidebar.button("Clear Chat"):
     st.session_state.messages = []
     st.session_state.conversation = None
     st.session_state.chat_history = None
-    st.session_state.trace_id = None
-    st.session_state.file_name =  None
-    st.session_state.page = None
-    st.session_state.chat_engine = None
-
-if st.sidebar.button("Clear Chat and Uploaded Files"):
-    st.session_state.messages = []
-    st.session_state.uploaded_files = []
-    st.session_state.conversation = None
-    st.session_state.chat_history = None
-    st.session_state.trace_id = None
     st.session_state.file_name =  None
     st.session_state.page = None
     st.session_state.chat_engine = None
 
 
-if 'session_id' not in st.session_state:
-    st.session_state.session_id = str(uuid.uuid4())
 if 'index' not in st.session_state:
     st.session_state.index = None
 if "uploaded_files" not in st.session_state:
@@ -253,20 +235,17 @@ if "uploaded_files" not in st.session_state:
 # area to input your API Key
 os.environ['OPENAI_API_KEY'] = st.sidebar.text_input('OpenAI API Key', type='password')
 
-
 uploaded_files = st.sidebar.file_uploader("Upload document", type=['docx', 'pdf'], accept_multiple_files=False)
 
 if not st.session_state.uploaded_files:
     st.markdown("Please Upload Files in the Sidebar")
 
-if st.session_state.uploaded_files and user_password != st.session_state.password:
-    st.markdown("Please Enter Correct Password")
-    st.sidebar.markdown(f'Uploaded DNA Documents: \n{[file.name for file in st.session_state.uploaded_files]}')
+if not os.environ['OPENAI_API_KEY']:
+    st.markdown('Please Enter API Key')
 
-if st.session_state.uploaded_files and user_password  == st.session_state.password:
+if st.session_state.uploaded_files and os.enviorn['OPENAI_API_KEY']:
 
     st.sidebar.markdown(f'Uploaded Documents: \n{[file.name for file in st.session_state.uploaded_files]}')
-    
     
     chat_engine = get_chat_engine(uploaded_files)
     
@@ -285,18 +264,10 @@ if st.session_state.uploaded_files and user_password  == st.session_state.passwo
     # start of prompt
     if prompt := st.chat_input("How can I help you?"):
         st.session_state.messages.append({"role": "user", "content": prompt})  
-        # root_trace = langfuse.trace(
-        #     name = "fsnb_chatbot",
-        #     session_id = st.session_state.session_id,
-        #     tags = ["production"]
-        # )
         with st.chat_message("user"):
             st.markdown(prompt)
-            # root_trace.update(input=prompt)
         # generates answer based on prompt
         with st.spinner(text='Thinking...'):
-            # init_message = [{'role':'user', 'content': 'test'}]
-            # messages = init_message + st.session_state.messages
             chat_history = [(ChatMessage(role=message['role'],content=message['content'])) for message in st.session_state.messages[:-1]]
             stream = chat_engine.stream_chat(prompt, chat_history=chat_history)
         with st.chat_message("assistant"):

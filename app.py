@@ -271,6 +271,7 @@ if st.session_state.uploaded_file and os.environ['OPENAI_API_KEY']:
         
             response = st.write_stream(stream.response_gen)
             st.session_state.source_nodes = stream.source_nodes
+            print(stream.source_nodes[0])
             with st.expander("Sources"):
                 for i, node in enumerate(st.session_state.source_nodes):
                     st.write(f"""

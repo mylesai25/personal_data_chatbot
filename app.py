@@ -228,7 +228,7 @@ if "uploaded_files" not in st.session_state:
 # area to input your API Key
 os.environ['OPENAI_API_KEY'] = st.sidebar.text_input('OpenAI API Key', type='password')
 
-uploaded_files = st.sidebar.file_uploader("Upload document", type=['docx', 'pdf'], accept_multiple_files=False)
+st.session_state.uploaded_files = st.sidebar.file_uploader("Upload document", type=['docx', 'pdf'], accept_multiple_files=False)
 
 if not st.session_state.uploaded_files:
     st.markdown("Please Upload Files in the Sidebar")
@@ -240,7 +240,7 @@ if st.session_state.uploaded_files and os.enviorn['OPENAI_API_KEY']:
 
     st.sidebar.markdown(f'Uploaded Documents: \n{[file.name for file in st.session_state.uploaded_files]}')
     
-    chat_engine = get_chat_engine(uploaded_files)
+    chat_engine = get_chat_engine(st.session_state.uploaded_files)
     
     # initializes messages for chatbot
     if "messages" not in st.session_state:

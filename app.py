@@ -204,9 +204,6 @@ def get_chat_engine(files):
         return chat_engine
 
 
-
-
-
 st.sidebar.markdown("# Menu")
 st.sidebar.markdown('Please enter your API KEY and upload your document below to start the chatbot!')
 

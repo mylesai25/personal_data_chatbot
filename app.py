@@ -123,24 +123,22 @@ def get_chat_engine(files):
         )
     
         documents = []
-        for uploaded_file in files:
-            if uploaded_file.type =='application/pdf':
-                # To convert to a string based IO:
-                stringio = extract_text_from_pdf(uploaded_file)
-        
-                # To read file as string:
-                text = Document(text=stringio)
-            elif uploaded_file.name.split('.')[-1] == 'docx':
-                uploaded_text = utils.get_topical_map(uploaded_file)
-                text = Document(text=uploaded_text)
-            else:
-                # To convert to a string based IO:
-                stringio = StringIO(uploaded_file.getvalue().decode("utf-8"))
-        
-                # To read file as string:
-                uploaded_text = stringio.read()
-                text = Document(text=uploaded_text)
-            documents.append(text)
+        if files.type =='application/pdf':
+            # To convert to a string based IO:
+            stringio = extract_text_from_pdf(uploaded_file)
+    
+            # To read file as string:
+            text = Document(text=stringio)
+        elif files.name.split('.')[-1] == 'docx':
+            uploaded_text = utils.get_topical_map(uploaded_file)
+            text = Document(text=uploaded_text)
+        else:
+            # To convert to a string based IO:
+            stringio = StringIO(uploaded_file.getvalue().decode("utf-8"))
+    
+            # To read file as string:
+            uploaded_text = stringio.read()
+            text = Document(text=uploaded_text)
 
                 
         nodes = splitter.get_nodes_from_documents(documents)

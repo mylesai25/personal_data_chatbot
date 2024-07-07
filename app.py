@@ -141,7 +141,7 @@ def get_chat_engine(file):
             text = Document(text=uploaded_text)
 
                 
-        nodes = splitter.get_nodes_from_documents(documents)
+        nodes = splitter.get_nodes_from_documents(text)
       
         # sentence_node_parser = SentenceWindowNodeParser.from_defaults(
         #         window_size=1,
@@ -216,24 +216,24 @@ if st.sidebar.button("Clear Chat"):
 
 if 'index' not in st.session_state:
     st.session_state.index = None
-if "uploaded_files" not in st.session_state:
-    st.session_state.uploaded_files = []
+if "uploaded_file" not in st.session_state:
+    st.session_state.uploaded_file = None
 
     
 # area to input your API Key
 os.environ['OPENAI_API_KEY'] = st.sidebar.text_input('OpenAI API Key', type='password')
 
-st.session_state.uploaded_files = st.sidebar.file_uploader("Upload document", type=['docx', 'pdf'], accept_multiple_files=False)
+st.session_state.uploaded_file = st.sidebar.file_uploader("Upload document", type=['docx', 'pdf'], accept_multiple_files=False)
 
-if not st.session_state.uploaded_files:
+if not st.session_state.uploaded_file:
     st.markdown("Please Upload Files in the Sidebar")
 
 if not os.environ['OPENAI_API_KEY']:
     st.markdown('Please Enter API Key')
 
-if st.session_state.uploaded_files and os.environ['OPENAI_API_KEY']:
+if st.session_state.uploaded_file and os.environ['OPENAI_API_KEY']:
     
-    chat_engine = get_chat_engine(st.session_state.uploaded_files)
+    chat_engine = get_chat_engine(st.session_state.uploaded_file)
     
     # initializes messages for chatbot
     if "messages" not in st.session_state:

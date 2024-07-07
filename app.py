@@ -1,120 +1,239 @@
-import streamlit as st
-from langchain_core.messages import HumanMessage, AIMessage
-from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain_community.chat_message_histories import ChatMessageHistory
-from langchain_core.chat_history import BaseChatMessageHistory
-from langchain_core.runnables.history import RunnableWithMessageHistory
-from langchain.agents.agent_types import AgentType
-from langchain_experimental.agents.agent_toolkits import create_pandas_dataframe_agent
-from langchain.agents import AgentExecutor
-from langchain_openai import ChatOpenAI
-from sqlalchemy import create_engine
-import matplotlib.pyplot as plt
-import pandas as pd
+import asyncio
+def get_or_create_eventloop():
+    try:
+        return asyncio.get_event_loop()
+    except RuntimeError as ex:
+        if "There is no current event loop in thread" in str(ex):
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            return asyncio.get_event_loop()
+
+loop = asyncio.new_event_loop()
+asyncio.set_event_loop(loop)
+
+from llama_index.core import (
+    VectorStoreIndex,
+    get_response_synthesizer,
+    GPTListIndex,
+    PromptHelper,
+    set_global_service_context,
+    Settings
+)
+from llama_index.core.retrievers import VectorIndexRetriever
+from llama_index.core.query_engine import RetrieverQueryEngine
+from llama_index.core.postprocessor import SimilarityPostprocessor
+from llama_index.core.schema import Document
+from llama_index.llms.anyscale import Anyscale
+from llama_index.llms.anthropic import Anthropic
+from llama_index.llms.openai import OpenAI
+from llama_index.core.indices.service_context import ServiceContext
+import urllib
+import nltk
+import tiktoken
+from nltk.tokenize import sent_tokenize
+from llama_index.core.callbacks import CallbackManager, TokenCountingHandler
+from typing import List
+from pydantic import BaseModel
+from llama_index.core import SimpleDirectoryReader
+from llama_index.core.ingestion import IngestionPipeline
+from llama_index.core.node_parser import TokenTextSplitter
+from llama_index.core.llms import ChatMessage, MessageRole
+from llama_index.core.prompts import ChatPromptTemplate
+from llama_index.core.chat_engine.condense_question import CondenseQuestionChatEngine
+from llama_index.core.callbacks import CallbackManager, LlamaDebugHandler
+from llama_index.core.node_parser import SentenceSplitter
+from llama_index.core.node_parser import SentenceWindowNodeParser
+from llama_index.core.postprocessor import MetadataReplacementPostProcessor
+from llama_index.core.postprocessor import LongContextReorder
+from llama_index.postprocessor.rankgpt_rerank import RankGPTRerank
+from llama_index.embeddings.mistralai import MistralAIEmbedding
+from llama_index.core.node_parser import TokenTextSplitter
+import time
+import re
 import os
-from openai import OpenAI
+import streamlit as st
+import pandas as pd
+import numpy as np
+import math
+import random
+import uuid
 from io import StringIO
-from io import BytesIO
-from PIL import Image
-from st_audiorec import st_audiorec
-from pathlib import Path
-from openai import OpenAI
-import speech_recognition as sr
-import requests
-import datetime
-from tempfile import NamedTemporaryFile
-import base64
 
+from langfuse import Langfuse
+from langfuse.llama_index import LlamaIndexCallbackHandler
+from streamlit_feedback import streamlit_feedback
+from llama_index.embeddings.anyscale import AnyscaleEmbedding
+from pypdf import PdfReader
+import utils
 
+for k, v in st.session_state.items():
+    st.session_state[k] = v
 
-# FUNCTIONS
-def save_audio_file(audio_bytes, file_extension):
-    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-    file_name = f"audio_{timestamp}.{file_extension}"
+mistral_api_key = os.environ['MISTRALAI_API_KEY']
 
-    with open(file_name, "wb") as f:
-        f.write(audio_bytes)
+# Functions
 
-    return file_name
+def is_overlapping(list1, list2):
+    return any(item in list2 for item in list1)
 
-def autoplay_audio(file_path: str):
-    with open(file_path, "rb") as f:
-        data = f.read()
-        b64 = base64.b64encode(data).decode()
-        md = f"""
-            <audio controls autoplay="true">
-            <source src="data:audio/mp3;base64,{b64}" type="audio/mp3">
-            </audio>
-            """
-        st.markdown(
-            md,
-            unsafe_allow_html=True,
-        )
+def extract_text_from_pdf(pdf_path):
+    """
+    Function to extract all text from a PDF file.
 
-def response_audio(text):
-    summary_response = client.chat.completions.create(
-        model='gpt-4o',
-        messages =[
-        {'role': 'system', 'content': 'You are a helpful assistant who specializes in summarizing text from an AI data analyst. Summarize incoming text into a single paragraph.'},
-        {'role': 'user', 'content': text}
-        ]
-    )
-    summary = summary_response.choices[0].message.content
-    with NamedTemporaryFile(suffix='.mp3') as temp:
-        response = client.audio.speech.create(
-            model='tts-1',
-            voice='alloy',
-            input=summary
-        )
-        tempname = temp.name
-        response.stream_to_file(tempname)
-        autoplay_audio(tempname)
-    return
+    Args:
+    pdf_path (str): The file path to the PDF from which text is to be extracted.
+
+    Returns:
+    str: All extracted text concatenated together with each page separated by a newline.
+    """
+    # Create a PDF reader object that opens and reads the PDF file at the specified path.
+    pdf_reader = PdfReader(pdf_path)
     
+    # Initialize a variable to store the text extracted from all pages.
+    full_text = ''
     
+    # Loop through each page in the PDF file.
+    for page in pdf_reader.pages:
+        # Extract text from the current page and concatenate it to the full_text variable.
+        # Add a newline character after each page's text to separate the text of different pages.
+        full_text += page.extract_text() + '\n'
     
-
-def extract_graphs(content):
-  # takes graph from content object
-  # returns a list of images to display
-  return [Image.open(BytesIO(client.files.content(item.image_file.file_id).read())) for item in content if item.type == 'image_file']
-
-def get_message_text(content):
-  # gets text from content object
-  # returns text to display on screen
-  return content[-1].text.value
+    # Return the complete text extracted from the PDF.
+    return full_text
 
 @st.cache_resource
-def create_message_thread():
-    return client.beta.threads.create()
+def get_api_type(api_type):
+    if api_type == 'openai':
+        # default is gpt-3.5-turbo, can also be gpt-4-0314
+        return OpenAI(model='gpt-4o') # for QA, temp is low
+    elif api_type == 'claude':
+        return Anthropic(model="claude-3-opus-20240229")
+    elif api_type == 'llama':
+        return Anyscale(model='meta-llama/Llama-2-70b-chat-hf')
+    elif api_type == 'mistral':
+        return Anyscale(model='mistralai/Mixtral-8x7B-Instruct-v0.1', max_tokens=10000)
+    else:
+        raise NotImplementedError
+  
 
 @st.cache_resource
-def create_file(uploaded_file):
-  file = client.files.create(
-    file=uploaded_file,
-    purpose='assistants'
-  )
-  return file
+def get_chat_engine(files):
+  with st.spinner(text='Loading and indexing documents - hang tight!'):
+        
+        llm = get_api_type('openai')
+        Settings.llm = llm
+        embed_model = MistralAIEmbedding(model_name='mistral-embed', api_key=mistral_api_key)
+        Settings.embed_model = embed_model
+        
 
-# Title of app
-st.title('AI Data Analyst')
+        splitter = TokenTextSplitter(
+            chunk_size=1024,
+            chunk_overlap=20,
+            separator=" ",
+        )
+    
+        documents = []
+        for uploaded_file in files:
+            if uploaded_file.type =='application/pdf':
+                # To convert to a string based IO:
+                stringio = extract_text_from_pdf(uploaded_file)
+        
+                # To read file as string:
+                text = Document(text=stringio)
+            elif uploaded_file.name.split('.')[-1] == 'docx':
+                uploaded_text = utils.get_topical_map(uploaded_file)
+                text = Document(text=uploaded_text)
+            else:
+                # To convert to a string based IO:
+                stringio = StringIO(uploaded_file.getvalue().decode("utf-8"))
+        
+                # To read file as string:
+                uploaded_text = stringio.read()
+                text = Document(text=uploaded_text)
+            documents.append(text)
 
-if "uploaded_files" not in st.session_state:
-    st.session_state.uploaded_files = []
-if 'audio_text' not in st.session_state:
-    st.session_state.audio_text = None
+                
+        nodes = splitter.get_nodes_from_documents(documents)
+      
+        # sentence_node_parser = SentenceWindowNodeParser.from_defaults(
+        #         window_size=1,
+        #         window_metadata_key="window",
+        #         original_text_metadata_key="original_text")
+  
+        # nodes = sentence_node_parser.get_nodes_from_documents()
+        index = VectorStoreIndex(nodes)
 
-uploaded_file = st.sidebar.file_uploader("Upload data", type=['csv'])
+        chat_text_qa_msgs = [
+              ChatMessage(
+                  role=MessageRole.SYSTEM,
+                  content=(
+                      """
+                      You are an expert on developing websites for contractors and explaining your expertise to a general audience.
+                      If a character or word limit is mentioned in the prompt, ADHERE TO IT. 
+                      For example, if a user wants a summary of a business less than 750 characters, the summary must be less than 750 characters.
+                      """
+          
+                  ),
+              ),
+              ChatMessage(
+                  role=MessageRole.USER,
+                  content=(
+                      "Context information is below.\n"
+                      "---------------------\n"
+                      "{context_str}\n"
+                      "---------------------\n"
+                      "Given the context information, give a detailed and thorough answer to the following question without mentioning where you found the answer: {query_str}\n"
+                      "Answer in a friendly manner."
+                      "Do not answer any questions that have no relevance to the context provided."
+                      "Do not include any instructions in your response."
+                      "Do not mention the context provided in your answer"
+                      'ANSWER WITHOUT MENTIONING THE PROVIDED DOCUMENTS'
+                      'YOU ARE NOT PERMITTED TO GIVE PAGE NUMBERS IN YOUR ANSWER UNDER ANY CIRCUMSTANCE'
+                      "Answer as if you are talking to a person who is curious about banking and loans."
+                      
+                  ),
+              ),
+          ]
+  
+        text_qa_template = ChatPromptTemplate(chat_text_qa_msgs)
+        
+        reorder = LongContextReorder()
+        # postprocessor = SimilarityPostprocessor(similarity_cutoff=0.7)
+        rerank = RankGPTRerank(top_n=5, llm=Anthropic(model="claude-3-haiku-20240307"))
+      
+        chat_engine = index.as_chat_engine('condense_plus_context',
+                                          text_qa_prompt=text_qa_template,
+                                          node_postprocessors=[
+                                                     reorder,
+                                                     MetadataReplacementPostProcessor(target_metadata_key="window"),
+                                                     rerank
+                                                 ],
+                                          similarity_top_k=15,
+                                          streaming=True)
 
-speech = st.sidebar.radio('Text-To-Speech?', ['On', 'Off'])
+        return chat_engine
 
-scraper = st.sidebar.markdown('[Link to Social Media Scraper](https://huggingface.co/spaces/mylesai/scraper)')
 
+
+
+# Password
+st.session_state.password = "Br@ndf0lderAI"
+
+st.sidebar.markdown("# Menu")
+st.sidebar.markdown('Please enter your password and upload your DNA document(s) below to start the chatbot!')
 
 if st.sidebar.button("Clear Chat"):
     st.session_state.messages = []
-    st.session_state.thread = create_message_thread()
-    st.session_state.audio_text = None
+    st.session_state.conversation = None
+    st.session_state.chat_history = None
+    st.session_state.trace_id = None
+    st.session_state.file_name =  None
+    st.session_state.page = None
+    st.session_state.chat_engine = None
+
+if st.sidebar.button("Clear Chat and Uploaded Files"):
+    st.session_state.messages = []
+    st.session_state.uploaded_files = []
     st.session_state.conversation = None
     st.session_state.chat_history = None
     st.session_state.trace_id = None
@@ -123,96 +242,65 @@ if st.sidebar.button("Clear Chat"):
     st.session_state.chat_engine = None
 
 
+if 'session_id' not in st.session_state:
+    st.session_state.session_id = str(uuid.uuid4())
+if 'index' not in st.session_state:
+    st.session_state.index = None
+if "uploaded_files" not in st.session_state:
+    st.session_state.uploaded_files = []
 
+    
 # area to input your API Key
 os.environ['OPENAI_API_KEY'] = st.sidebar.text_input('OpenAI API Key', type='password')
 
-if os.environ['OPENAI_API_KEY'] and uploaded_file:
-    # model used
-    client = OpenAI()
-    with st.sidebar.container():
-      audio_bytes = st_audiorec()
-      if audio_bytes:
-        file_name = save_audio_file(audio_bytes, 'wav')
-        transcript = client.audio.transcriptions.create(
-            model='whisper-1',
-            file=open(file_name, 'rb')
-        )
-        st.write(transcript.text)
-        if transcript:
-            st.session_state.audio_text = transcript.text
-            transcript = None
-            audio_bytes = None
-      else:
-        st.session_state.audio_text = None
 
-    # response.stream_to_file(speech_file_path)
-    
-    file = create_file(uploaded_file)
+uploaded_files = st.sidebar.file_uploader("Upload document", type=['docx', 'pdf'], accept_multiple_files=False)
 
-    st.session_state.thread = create_message_thread()
+if not st.session_state.uploaded_files:
+    st.markdown("Please Upload Files in the Sidebar")
+
+if st.session_state.uploaded_files and user_password != st.session_state.password:
+    st.markdown("Please Enter Correct Password")
+    st.sidebar.markdown(f'Uploaded DNA Documents: \n{[file.name for file in st.session_state.uploaded_files]}')
+
+if st.session_state.uploaded_files and user_password  == st.session_state.password:
+
+    st.sidebar.markdown(f'Uploaded Documents: \n{[file.name for file in st.session_state.uploaded_files]}')
     
-    # Initialize chat history
+    
+    chat_engine = get_chat_engine(uploaded_files)
+    
+    # initializes messages for chatbot
     if "messages" not in st.session_state:
         st.session_state.messages = []
     
-    # Display chat messages from history on app rerun
+    
+    # displays chat history
     for message in st.session_state.messages:
         with st.chat_message(message["role"]):
-            if message['role'] == 'assistant':
-              st.markdown(message['content']['text'])
-              for fig in message['content']['plots']:
-                st.write(fig)
-            else:
-              st.markdown(message["content"])
+            st.markdown(message["content"])
         
-    # Accept user input
-    if (prompt := st.chat_input("Enter chat prompt here") or st.sidebar.button('Submit Audio')):
-        # Add user message to chat history
-        if st.session_state.audio_text:
-            prompt = st.session_state.audio_text
-        st.session_state.messages.append({"role": "user", "content": prompt})
-        # Display user message in chat message container
+    
+    
+    # start of prompt
+    if prompt := st.chat_input("How can I help you?"):
+        st.session_state.messages.append({"role": "user", "content": prompt})  
+        # root_trace = langfuse.trace(
+        #     name = "fsnb_chatbot",
+        #     session_id = st.session_state.session_id,
+        #     tags = ["production"]
+        # )
         with st.chat_message("user"):
             st.markdown(prompt)
-        # Display assistant response in chat message container
-        with st.spinner(text='Thinking'):
-            if len(st.session_state.messages) < 2:
-                thread_message = client.beta.threads.messages.create(
-                  st.session_state.thread.id,
-                  role="user",
-                  content=prompt,
-                  attachments=[
-                    {
-                        "file_id": file.id,
-                        "tools": [{"type": "code_interpreter"}]
-                    }
-                ])
-            else:
-                thread_message = client.beta.threads.messages.create(
-                st.session_state.thread.id,
-                role="user",
-                content=prompt
-                )
-            run = client.beta.threads.runs.create_and_poll(
-                thread_id = st.session_state.thread.id,
-                assistant_id='asst_yiM2UfX3tc2bY9nttV2g7KJi',
-                )
-            if run.status == 'completed':
-                messages = client.beta.threads.messages.list(
-                      thread_id = st.session_state.thread.id
-                  )
-                content = messages.data[0].content
-            else:
-                st.write(run.status)
-            
+            # root_trace.update(input=prompt)
+        # generates answer based on prompt
+        with st.spinner(text='Thinking...'):
+            # init_message = [{'role':'user', 'content': 'test'}]
+            # messages = init_message + st.session_state.messages
+            chat_history = [(ChatMessage(role=message['role'],content=message['content'])) for message in st.session_state.messages[:-1]]
+            stream = chat_engine.stream_chat(prompt, chat_history=chat_history)
         with st.chat_message("assistant"):
-            text = get_message_text(content)
-            plots = extract_graphs(content)
-            st.markdown(text)
-            for plot in plots:
-                st.write(plot)
-            if speech == 'On':
-                response_audio(text)
-        st.session_state.messages.append({"role": "assistant", "content": {'text':text, 'plots': plots}})
         
+            response = st.write_stream(stream.response_gen)
+        st.session_state.messages.append({'role': 'assistant', 'content': response})
+

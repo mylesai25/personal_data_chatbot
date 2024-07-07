@@ -107,7 +107,7 @@ def get_api_type(api_type):
   
 
 @st.cache_resource
-def get_chat_engine(files):
+def get_chat_engine(file):
   with st.spinner(text='Loading and indexing documents - hang tight!'):
         
         llm = get_api_type('openai')
@@ -123,18 +123,18 @@ def get_chat_engine(files):
         )
     
         documents = []
-        if files.type =='application/pdf':
+        if file.type =='application/pdf':
             # To convert to a string based IO:
-            stringio = extract_text_from_pdf(uploaded_file)
+            stringio = extract_text_from_pdf(file)
     
             # To read file as string:
             text = Document(text=stringio)
         elif files.name.split('.')[-1] == 'docx':
-            uploaded_text = utils.get_topical_map(uploaded_file)
+            uploaded_text = utils.get_topical_map(file)
             text = Document(text=uploaded_text)
         else:
             # To convert to a string based IO:
-            stringio = StringIO(uploaded_file.getvalue().decode("utf-8"))
+            stringio = StringIO(file.getvalue().decode("utf-8"))
     
             # To read file as string:
             uploaded_text = stringio.read()

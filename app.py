@@ -211,6 +211,8 @@ def get_chat_engine(file):
         return chat_engine
 
 
+st.title("Personal Data Chatbot")
+
 st.sidebar.markdown("# Menu")
 st.sidebar.markdown('Please enter your API KEY and upload your document below to start the chatbot!')
 
@@ -233,8 +235,6 @@ if "uploaded_file" not in st.session_state:
 os.environ['OPENAI_API_KEY'] = st.sidebar.text_input('OpenAI API Key', type='password')
 
 st.session_state.uploaded_file = st.sidebar.file_uploader("Upload document", type=['docx', 'pdf'], accept_multiple_files=False)
-
-st.title("Personal Data Chatbot")
 
 if not st.session_state.uploaded_file:
     st.markdown("Please Upload Files in the Sidebar")

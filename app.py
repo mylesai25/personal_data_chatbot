@@ -234,6 +234,7 @@ if st.sidebar.button("Clear Chat"):
     st.session_state.file_name =  None
     st.session_state.page = None
     st.session_state.chat_engine = None
+    st.session_state.source_nodes = None
 
 if not st.session_state.uploaded_file:
     st.markdown("Please Upload Files in the Sidebar")
@@ -269,5 +270,12 @@ if st.session_state.uploaded_file and os.environ['OPENAI_API_KEY']:
         with st.chat_message("assistant"):
         
             response = st.write_stream(stream.response_gen)
+            st.session_state.source_nodes = stream.source_nodes
+            with st.expander("Sources"):
+                for i, node in enumerate(st.session_state.source_nodes):
+                    st.write(f"""
+                                **{i+1}. Text:** {node.metadata['original_text'].replace("*","")} 
+                                **Source Document: {node.metadata['file_name']}, Page {node.metadata['page_label']}**
+                                """)
         st.session_state.messages.append({'role': 'assistant', 'content': response})
 

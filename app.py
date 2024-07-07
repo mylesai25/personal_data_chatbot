@@ -275,7 +275,7 @@ if st.session_state.uploaded_file and os.environ['OPENAI_API_KEY']:
             with st.expander("Sources"):
                 for i, node in enumerate(st.session_state.source_nodes):
                     st.write(f"""
-                                **{i+1}. Text:** {node.metadata['text'].replace("*","")} 
+                                **{i+1}. Text:** {node.metadata['Text'].replace("*","")} 
                                 """)
         st.session_state.messages.append({'role': 'assistant', 'content': response})
 

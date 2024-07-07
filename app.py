@@ -59,8 +59,6 @@ import random
 from io import StringIO
 from pypdf import PdfReader
 
-for k, v in st.session_state.items():
-    st.session_state[k] = v
 
 mistral_api_key = os.environ['MISTRALAI_API_KEY']
 
@@ -235,6 +233,8 @@ if "uploaded_file" not in st.session_state:
 os.environ['OPENAI_API_KEY'] = st.sidebar.text_input('OpenAI API Key', type='password')
 
 st.session_state.uploaded_file = st.sidebar.file_uploader("Upload document", type=['docx', 'pdf'], accept_multiple_files=False)
+
+st.title("Personal Data Chatbot")
 
 if not st.session_state.uploaded_file:
     st.markdown("Please Upload Files in the Sidebar")

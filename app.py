@@ -141,7 +141,7 @@ def get_chat_engine(file):
             text = Document(text=uploaded_text)
 
                 
-        nodes = splitter.get_nodes_from_documents(text)
+        nodes = splitter.get_nodes_from_documents([text])
       
         # sentence_node_parser = SentenceWindowNodeParser.from_defaults(
         #         window_size=1,

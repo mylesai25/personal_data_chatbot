@@ -1,2 +1,2 @@
-# personal_data_chatbot
+# Personal Data Chatbot
 Chatbot that uses uploaded personal data as a knowledge base

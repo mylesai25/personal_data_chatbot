@@ -116,23 +116,34 @@ def get_chat_engine(file):
         Settings.embed_model = embed_model
         
 
-        splitter = TokenTextSplitter(
-            chunk_size=1024,
-            chunk_overlap=20,
-            separator=" ",
-        )
+
     
         documents = []
         if file.type =='application/pdf':
+            splitter = SentenceWindowNodeParser.from_defaults(
+                window_size=5,
+                window_metadata_key="window",
+                original_text_metadata_key="original_text"
+            )
             # To convert to a string based IO:
             stringio = extract_text_from_pdf(file)
     
             # To read file as string:
             text = Document(text=stringio)
         elif files.name.split('.')[-1] == 'docx':
+            splitter = SentenceWindowNodeParser.from_defaults(
+                window_size=5,
+                window_metadata_key="window",
+                original_text_metadata_key="original_text"
+            )
             uploaded_text = utils.get_topical_map(file)
             text = Document(text=uploaded_text)
         else:
+            splitter = TokenTextSplitter(
+                chunk_size=1024,
+                chunk_overlap=20,
+                separator=" ",
+            )
             # To convert to a string based IO:
             stringio = StringIO(file.getvalue().decode("utf-8"))
     

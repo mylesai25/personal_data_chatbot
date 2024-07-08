@@ -239,7 +239,7 @@ if 'api_type' not in st.session_state:
 
     
 # area to input your API Key
-st.session_state.api_type = st.sidebar.radio("Select AI Provider", ['OpenAI', 'Anthropic', 'Anyscale'], horizontal='True')
+st.session_state.api_type = st.sidebar.radio("Select AI Provider", ['OpenAI', 'Anthropic', 'Anyscale'], horizontal=True)
 if st.session_state.api_type:
     if st.session_state.api_type == 'OpenAI':
         st.session_state.model_name = st.sidebar.selectbox('Which model would you like to use?', openai_models)

@@ -278,7 +278,7 @@ if not st.session_state.uploaded_file:
 if not os.environ['OPENAI_API_KEY']:
     st.markdown(':red-background[Please Enter API Key]')
 
-if st.session_state.uploaded_file and os.environ['OPENAI_API_KEY']:
+if st.session_state.uploaded_file and (os.environ['OPENAI_API_KEY'] or os.environ['ANTHROPIC_API_KEY'] or os.environ['ANYSCALE_API_KEY']):
     
     chat_engine = get_chat_engine(st.session_state.uploaded_file, st.session_state.model_name)
     

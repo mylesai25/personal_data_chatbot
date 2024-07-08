@@ -275,7 +275,7 @@ if not st.session_state.uploaded_file:
     st.session_state.chat_engine = None
     st.session_state.source_nodes = None
 
-if not os.environ['OPENAI_API_KEY']:
+if not (os.environ['OPENAI_API_KEY'] or os.environ['ANTHROPIC_API_KEY'] or os.environ['ANYSCALE_API_KEY']):
     st.markdown(':red-background[Please Enter API Key]')
 
 if st.session_state.uploaded_file and (os.environ['OPENAI_API_KEY'] or os.environ['ANTHROPIC_API_KEY'] or os.environ['ANYSCALE_API_KEY']):

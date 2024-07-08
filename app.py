@@ -239,16 +239,16 @@ if 'api_type' not in st.session_state:
 
     
 # area to input your API Key
-st.session_state.api_type = st.radio("Select AI Provider", ['OpenAI', 'Anthropic', 'Anyscale'])
+st.session_state.api_type = st.sidebar.radio("Select AI Provider", ['OpenAI', 'Anthropic', 'Anyscale'], horizontal='True')
 if st.session_state.api_type:
     if st.session_state.api_type == 'OpenAI':
-        st.session_state.model_name = st.selectbox('Which model would you like to use?', openai_models)
+        st.session_state.model_name = st.sidebar.selectbox('Which model would you like to use?', openai_models)
         os.environ['OPENAI_API_KEY'] = st.sidebar.text_input('OpenAI API Key', type='password')
     elif st.session_state.api_type == 'Anthropic':
-        st.session_state.model_name = st.selectbox('Which model would you like to use?', anthropic_models)
+        st.session_state.model_name = st.sidebar.selectbox('Which model would you like to use?', anthropic_models)
         os.environ['OPENAI_API_KEY'] = st.sidebar.text_input('Anthropic API Key', type='password')
     elif st.session_state.api_type == 'Anyscale':
-        st.session_state.model_name = st.selectbox('Which model would you like to use?', anyscale_models)
+        st.session_state.model_name = st.sidebar.selectbox('Which model would you like to use?', anyscale_models)
         os.environ['OPENAI_API_KEY'] = st.sidebar.text_input('Anyscale API Key', type='password')
 
 st.session_state.uploaded_file = st.sidebar.file_uploader("Upload document", type=['docx', 'pdf'], accept_multiple_files=False)

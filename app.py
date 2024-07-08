@@ -279,7 +279,7 @@ if st.session_state.uploaded_file and os.environ['OPENAI_API_KEY']:
                 st.markdown(prompt)
             # generates answer based on prompt
             with st.spinner(text='Thinking...'):
-                chat_history = [(ChatMessage(role=message['role'],content=message['content'])) for message in st.session_state.messages[:-1]]
+                chat_history = [(ChatMessage(role=message['role'],content=message['content'])) for message in st.session_state.all_messages[:-1]]
                 stream = chat_engine.stream_chat(prompt, chat_history=chat_history)
             with st.chat_message("assistant"):
                 response = st.write_stream(stream.response_gen)

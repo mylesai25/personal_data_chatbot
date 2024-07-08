@@ -127,7 +127,7 @@ def get_llm(model_name):
 def get_chat_engine(file, model_name):
   with st.spinner(text='Loading and indexing documents - hang tight!'):
         
-        llm = get_llm_model(model_name)
+        llm = get_llm(model_name)
         Settings.llm = llm
         embed_model = MistralAIEmbedding(model_name='mistral-embed', api_key=mistral_api_key)
         Settings.embed_model = embed_model

@@ -59,6 +59,12 @@ import random
 from io import StringIO
 from pypdf import PdfReader
 
+# List of OpenAI Models
+openai_models = ['gpt-4o', 'gpt-4-turbo', 'gpt-3.5-turbo']
+# List of Anthropic Models
+anthropic_models = ['sonnet-3.5', 'opus-3', 'sonnet-3', 'haiku-3']
+# List of Anyscale Models
+anyscale_models = ['llama-3-70B', 'llama-3-8B', 'mistral-8x7B', 'mistral-8x22B']
 
 mistral_api_key = os.environ['MISTRALAI_API_KEY']
 
@@ -90,31 +96,41 @@ def extract_text_from_pdf(pdf_path):
     return full_text
 
 @st.cache_resource
-def get_api_type(api_type):
-    if api_type == 'openai':
-        # default is gpt-3.5-turbo, can also be gpt-4-0314
-        return OpenAI(model='gpt-4o') # for QA, temp is low
-    elif api_type == 'claude':
+def get_llm(model_name):
+    if model_name == 'gpt-4o':
+        return OpenAI(model='gpt-4o')
+    elif model_name == 'gpt-4-turbo':
+        return OpenAI(model='gpt-4-turbo')
+    elif model_name == 'gpt-3.5-turbo':
+        return OpenAI(model='gpt-3.5-turbo')
+    elif model_name == 'sonnet-3.5':
+        return Anthropic(model="claude-3-5-sonnet-20240620")
+    elif model_name == 'opus-3':
         return Anthropic(model="claude-3-opus-20240229")
-    elif api_type == 'llama':
-        return Anyscale(model='meta-llama/Llama-2-70b-chat-hf')
-    elif api_type == 'mistral':
-        return Anyscale(model='mistralai/Mixtral-8x7B-Instruct-v0.1', max_tokens=10000)
+    elif model_name == 'sonnet-3':
+        return Anthropic(model="claude-3-sonnet-20240229")
+    elif model_name == 'haiku-3':
+        return Anthropic(model="claude-3-haiku-20240307")
+    elif model_name == 'llama-3-70B':
+        return Anyscale(model='meta-llama/Meta-Llama-3-70B-Instruct')
+    elif model_name == 'llama-3-8B':
+        return Anyscale(model='meta-llama/Meta-Llama-3-70B-Instruct')
+    elif model_name == 'mistral-8x7B':
+        return Anyscale(model='mistralai/Mixtral-8x7B-Instruct-v0.1')
+    elif model_name == 'mistral-8x22B':
+        return Anyscale(model='mistralai/Mixtral-8x7B-Instruct-v0.1')
     else:
         raise NotImplementedError
   
 
 @st.cache_resource
-def get_chat_engine(file):
+def get_chat_engine(file, model_name):
   with st.spinner(text='Loading and indexing documents - hang tight!'):
         
-        llm = get_api_type('openai')
+        llm = get_llm_model(model_name)
         Settings.llm = llm
         embed_model = MistralAIEmbedding(model_name='mistral-embed', api_key=mistral_api_key)
         Settings.embed_model = embed_model
-        
-
-
     
         documents = []
         if file.type =='application/pdf':
@@ -218,10 +234,22 @@ if 'index' not in st.session_state:
     st.session_state.index = None
 if "uploaded_file" not in st.session_state:
     st.session_state.uploaded_file = None
+if 'api_type' not in st.session_state:
+    st.session_state.api_type = None
 
     
 # area to input your API Key
-os.environ['OPENAI_API_KEY'] = st.sidebar.text_input('OpenAI API Key', type='password')
+st.session_state.api_type = st.radio("Select AI Provider", ['OpenAI', 'Anthropic', 'Anyscale'])
+if st.session_state.api_type:
+    if st.session_state.api_type == 'OpenAI':
+        st.session_state.model_name = st.selectbox('Which model would you like to use?', openai_models)
+        os.environ['OPENAI_API_KEY'] = st.sidebar.text_input('OpenAI API Key', type='password')
+    elif st.session_state.api_type == 'Anthropic':
+        st.session_state.model_name = st.selectbox('Which model would you like to use?', anthropic_models)
+        os.environ['OPENAI_API_KEY'] = st.sidebar.text_input('Anthropic API Key', type='password')
+    elif st.session_state.api_type == 'Anyscale':
+        st.session_state.model_name = st.selectbox('Which model would you like to use?', anyscale_models)
+        os.environ['OPENAI_API_KEY'] = st.sidebar.text_input('Anyscale API Key', type='password')
 
 st.session_state.uploaded_file = st.sidebar.file_uploader("Upload document", type=['docx', 'pdf'], accept_multiple_files=False)
 

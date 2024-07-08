@@ -275,7 +275,7 @@ if not os.environ['OPENAI_API_KEY']:
 
 if st.session_state.uploaded_file and os.environ['OPENAI_API_KEY']:
     
-    chat_engine = get_chat_engine(st.session_state.uploaded_file)
+    chat_engine = get_chat_engine(st.session_state.uploaded_file, st.session_state.model_name)
     
     # Welcome message for the chatbot
     welcome_message = f"""

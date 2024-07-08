@@ -248,8 +248,8 @@ if st.session_state.uploaded_file and os.environ['OPENAI_API_KEY']:
     chat_engine = get_chat_engine(st.session_state.uploaded_file)
     
     # Welcome message for the chatbot
-    welcome_message = """
-    Hi Team FSNB! I've become an expert in lending policies and regulations thanks to the knowledge base you've provided me with! Feel free to ask me any question.
+    welcome_message = f"""
+    Hi! I've just become an expert on the document: {st.session_state.uploaded_file} thanks to you! Feel free to ask me any question.
     """
     
     # Initialize session state variables for chat messages

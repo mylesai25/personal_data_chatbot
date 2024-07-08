@@ -257,6 +257,11 @@ if st.session_state.api_type:
     elif st.session_state.api_type == 'Anyscale':
         st.session_state.model_name = st.sidebar.selectbox('Which model would you like to use?', anyscale_models)
         os.environ['ANYSCALE_API_KEY'] = st.sidebar.text_input('Anyscale API Key', type='password')
+    else:
+        os.environ['ANTHROPIC_API_KEY'] = None
+        os.environ['ANYSCALE_API_KEY'] = None
+        os.environ['OPENAI_API_KEY'] = None
+        
 
 st.session_state.uploaded_file = st.sidebar.file_uploader("Upload document", type=['pdf'], accept_multiple_files=False)
 

@@ -251,8 +251,6 @@ if st.session_state.api_type:
     if st.session_state.api_type == 'OpenAI':
         st.session_state.model_name = st.sidebar.selectbox('Which model would you like to use?', openai_models)
         os.environ['OPENAI_API_KEY'] = st.sidebar.text_input('OpenAI API Key', type='password')
-        os.environ['ANTHROPIC_API_KEY'] = None
-        os.environ['ANYSCALE_API_KEY'] = None
     elif st.session_state.api_type == 'Anthropic':
         st.session_state.model_name = st.sidebar.selectbox('Which model would you like to use?', anthropic_models)
         os.environ['ANTHROPIC_API_KEY'] = st.sidebar.text_input('Anthropic API Key', type='password')

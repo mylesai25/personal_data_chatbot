@@ -228,7 +228,8 @@ os.environ['OPENAI_API_KEY'] = st.sidebar.text_input('OpenAI API Key', type='pas
 st.session_state.uploaded_file = st.sidebar.file_uploader("Upload document", type=['docx', 'pdf'], accept_multiple_files=False)
 
 if st.sidebar.button("Clear Chat"):
-    st.session_state.messages = []
+    st.session_state.all_messages = []
+    st.session_state.display_messages = []
     st.session_state.conversation = None
     st.session_state.chat_history = None
     st.session_state.file_name =  None
@@ -246,31 +247,50 @@ if st.session_state.uploaded_file and os.environ['OPENAI_API_KEY']:
     
     chat_engine = get_chat_engine(st.session_state.uploaded_file)
     
-    # initializes messages for chatbot
-    if "messages" not in st.session_state:
-        st.session_state.messages = []
+    # Welcome message for the chatbot
+    welcome_message = """
+    Hi Team FSNB! I've become an expert in lending policies and regulations thanks to the knowledge base you've provided me with! Feel free to ask me any question.
+    """
     
-    # displays chat history
-    for message in st.session_state.messages:
+    # Initialize session state variables for chat messages
+    if "all_messages" not in st.session_state:
+        st.session_state.all_messages = [{'role':'user', 'content': 'test'}]
+    if "display_messages" not in st.session_state:
+        st.session_state.display_messages = []
+    
+    # Display chat history
+    for message in st.session_state.display_messages:
         with st.chat_message(message["role"]):
-            st.markdown(message["content"])
-        
-    # start of prompt
-    if prompt := st.chat_input("How can I help you?"):
-        st.session_state.messages.append({"role": "user", "content": prompt})  
-        with st.chat_message("user"):
-            st.markdown(prompt)
-        # generates answer based on prompt
-        with st.spinner(text='Thinking...'):
-            chat_history = [(ChatMessage(role=message['role'],content=message['content'])) for message in st.session_state.messages[:-1]]
-            stream = chat_engine.stream_chat(prompt, chat_history=chat_history)
-        with st.chat_message("assistant"):
-            response = st.write_stream(stream.response_gen)
-            st.session_state.source_nodes = stream.source_nodes
-            with st.expander("Sources"):
-                for i, node in enumerate(st.session_state.source_nodes):
-                    st.markdown(f"""
-                                **{i+1}. Text:** {node.metadata['original_text'].replace("*","")} 
-                                """)
-        st.session_state.messages.append({'role': 'assistant', 'content': response})
+            st.markdown(str(message["content"]))
+    
+    # Display welcome message if no chat history is present
+    if len(st.session_state.display_messages) < 1:
+        with st.chat_message('assistant'):
+            st.markdown(welcome_message)
+            st.session_state.display_messages.append({"role": "assistant", "content": welcome_message})
+    
+    # Handle user input and generate response
+    if prompt := st.chat_input("How can I help you?", max_chars=1000):
+        st.session_state.display_messages.append({"role": "user", "content": prompt})
+        st.session_state.all_messages.append({"role": "user", "content": prompt})
+            
+        # start of prompt
+        if prompt := st.chat_input("How can I help you?"):
+            st.session_state.messages.append({"role": "user", "content": prompt})  
+            with st.chat_message("user"):
+                st.markdown(prompt)
+            # generates answer based on prompt
+            with st.spinner(text='Thinking...'):
+                chat_history = [(ChatMessage(role=message['role'],content=message['content'])) for message in st.session_state.messages[:-1]]
+                stream = chat_engine.stream_chat(prompt, chat_history=chat_history)
+            with st.chat_message("assistant"):
+                response = st.write_stream(stream.response_gen)
+                st.session_state.source_nodes = stream.source_nodes
+                with st.expander("Sources"):
+                    for i, node in enumerate(st.session_state.source_nodes):
+                        st.markdown(f"""
+                                    **{i+1}. Text:** {node.metadata['original_text'].replace("*","")} 
+                                    """)
+                st.session_state.display_messages.append({"role": "assistant", "content": response})
+                st.session_state.all_messages.append({"role": "assistant", "content": response})
 

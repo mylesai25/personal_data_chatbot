@@ -100,9 +100,9 @@ def get_llm(model_name, api_key=None):
     if model_name == 'gpt-4o':
         return OpenAI(model='gpt-4o', api_key=api_key, default_headers={'Authorization': f'Bearer {api_key}'})
     elif model_name == 'gpt-4-turbo':
-        return OpenAI(model='gpt-4-turbo', api_key=api_key, default_headers={'Authorization': f'Bearer {api_key}')
+        return OpenAI(model='gpt-4-turbo', api_key=api_key, default_headers={'Authorization': f'Bearer {api_key}'})
     elif model_name == 'gpt-3.5-turbo':
-        return OpenAI(model='gpt-3.5-turbo', api_key=api_key, default_headers={'Authorization': f'Bearer {api_key}')
+        return OpenAI(model='gpt-3.5-turbo', api_key=api_key, default_headers={'Authorization': f'Bearer {api_key}'})
     elif model_name == 'sonnet-3.5':
         return Anthropic(model="claude-3-5-sonnet-20240620")
     elif model_name == 'opus-3':

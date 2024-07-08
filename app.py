@@ -213,7 +213,7 @@ def get_chat_engine(file, model_name):
         if model_name in openai_models:
             rerank = RankGPTRerank(top_n=5, llm=get_llm('gpt-3.5-turbo'))
         elif model_name in anthropic_models:
-            rerank = RankGPTRerank(top_n=5, llm=get_llm('haiku'))
+            rerank = RankGPTRerank(top_n=5, llm=get_llm('haiku-3'))
         elif model_name in anyscale_models:
             rerank = RankGPTRerank(top_n=5, llm=get_llm('mistral-8x7B'))
       

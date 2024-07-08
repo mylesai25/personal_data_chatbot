@@ -211,7 +211,7 @@ def get_chat_engine(file, model_name):
         reorder = LongContextReorder()
         # postprocessor = SimilarityPostprocessor(similarity_cutoff=0.7)
         if model_name in openai_models:
-            rerank = RankGPTRerank(top_n=5, llm=get_llm('gpt-3.5-turbo')
+            rerank = RankGPTRerank(top_n=5, llm=get_llm('gpt-3.5-turbo'))
         elif model_name in anthropic_models:
             rerank = RankGPTRerank(top_n=5, llm=get_llm('haiku'))
         elif model_name in anyscale_models:

@@ -279,7 +279,7 @@ if st.session_state.uploaded_file and os.environ['OPENAI_API_KEY']:
     if prompt := st.chat_input("How can I help you?", max_chars=1000):
         st.session_state.display_messages.append({"role": "user", "content": prompt})
         st.session_state.all_messages.append({"role": "user", "content": prompt})
-        with st.chat_message("user"):
+        with st.chat_message("user", avatar="./chatbot_icon.webp"):
             st.markdown(prompt)
         # generates answer based on prompt
         with st.spinner(text='Thinking...'):

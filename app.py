@@ -165,9 +165,7 @@ def get_chat_engine(file):
                   role=MessageRole.SYSTEM,
                   content=(
                       """
-                      You are an expert on developing websites for contractors and explaining your expertise to a general audience.
-                      If a character or word limit is mentioned in the prompt, ADHERE TO IT. 
-                      For example, if a user wants a summary of a business less than 750 characters, the summary must be less than 750 characters.
+                      You are an expert in communicating answers to a general audience.
                       """
           
                   ),

@@ -267,7 +267,7 @@ if st.session_state.uploaded_file and os.environ['OPENAI_API_KEY']:
     
     # Display welcome message if no chat history is present
     if len(st.session_state.display_messages) < 1:
-        with st.chat_message('assistant'):
+        with st.chat_message('assistant', avatar="./mylesai_logo_no_text.png"):
             st.markdown(welcome_message)
             st.session_state.display_messages.append({"role": "assistant", "content": welcome_message})
     
@@ -275,7 +275,7 @@ if st.session_state.uploaded_file and os.environ['OPENAI_API_KEY']:
     if prompt := st.chat_input("How can I help you?", max_chars=1000):
         st.session_state.display_messages.append({"role": "user", "content": prompt})
         st.session_state.all_messages.append({"role": "user", "content": prompt})
-        with st.chat_message("user", avatar="./mylesai_logo_no_text.png"):
+        with st.chat_message("user"):
             st.markdown(prompt)
         # generates answer based on prompt
         with st.spinner(text='Thinking...'):

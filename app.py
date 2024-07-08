@@ -98,7 +98,7 @@ def extract_text_from_pdf(pdf_path):
 @st.cache_resource
 def get_llm(model_name, api_key=None):
     if model_name == 'gpt-4o':
-        return OpenAI(model='gpt-4o', api_key=api_key, default_headers={'Authorization': f'Bearer {api_key}')
+        return OpenAI(model='gpt-4o', api_key=api_key, default_headers={'Authorization': f'Bearer {api_key}'})
     elif model_name == 'gpt-4-turbo':
         return OpenAI(model='gpt-4-turbo', api_key=api_key, default_headers={'Authorization': f'Bearer {api_key}')
     elif model_name == 'gpt-3.5-turbo':

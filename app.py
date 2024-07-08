@@ -237,10 +237,10 @@ if st.sidebar.button("Clear Chat"):
     st.session_state.source_nodes = None
 
 if not st.session_state.uploaded_file:
-    st.markdown("Please Upload Files in the Sidebar")
+    st.markdown(":red-background[Please Upload Files in the Sidebar]")
 
 if not os.environ['OPENAI_API_KEY']:
-    st.markdown('Please Enter API Key')
+    st.markdown(':red-background[Please Enter API Key]')
 
 if st.session_state.uploaded_file and os.environ['OPENAI_API_KEY']:
     
@@ -250,14 +250,11 @@ if st.session_state.uploaded_file and os.environ['OPENAI_API_KEY']:
     if "messages" not in st.session_state:
         st.session_state.messages = []
     
-    
     # displays chat history
     for message in st.session_state.messages:
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
         
-    
-    
     # start of prompt
     if prompt := st.chat_input("How can I help you?"):
         st.session_state.messages.append({"role": "user", "content": prompt})  
@@ -268,7 +265,6 @@ if st.session_state.uploaded_file and os.environ['OPENAI_API_KEY']:
             chat_history = [(ChatMessage(role=message['role'],content=message['content'])) for message in st.session_state.messages[:-1]]
             stream = chat_engine.stream_chat(prompt, chat_history=chat_history)
         with st.chat_message("assistant"):
-        
             response = st.write_stream(stream.response_gen)
             st.session_state.source_nodes = stream.source_nodes
             with st.expander("Sources"):

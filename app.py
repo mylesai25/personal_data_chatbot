@@ -275,13 +275,13 @@ if st.session_state.uploaded_file and os.environ['OPENAI_API_KEY']:
     if prompt := st.chat_input("How can I help you?", max_chars=1000):
         st.session_state.display_messages.append({"role": "user", "content": prompt})
         st.session_state.all_messages.append({"role": "user", "content": prompt})
-        with st.chat_message("user"):
+        with st.chat_message("user", avatar="./mylesai_logo_no_text.png"):
             st.markdown(prompt)
         # generates answer based on prompt
         with st.spinner(text='Thinking...'):
             chat_history = [(ChatMessage(role=message['role'],content=message['content'])) for message in st.session_state.all_messages[:-1]]
             stream = chat_engine.stream_chat(prompt, chat_history=chat_history)
-        with st.chat_message("assistant", avatar="./mylesai_logo_no_text.png"):
+        with st.chat_message("assistant"):
             response = st.write_stream(stream.response_gen)
             st.session_state.source_nodes = stream.source_nodes
             with st.expander("Sources"):

@@ -266,7 +266,7 @@ if st.session_state.uploaded_file and os.environ['OPENAI_API_KEY']:
             with st.chat_message(message["role"], avatar="./myles_ai_logo_medium.png"):
                 st.markdown(str(message["content"]))
         else:
-            with st.chat_message(message["role"]):
+            with st.chat_message(message["role"], avatar="./chatbot_icon.webp"):
                 st.markdown(str(message["content"]))
     
     # Display welcome message if no chat history is present

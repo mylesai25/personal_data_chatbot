@@ -267,7 +267,7 @@ if st.session_state.uploaded_file and os.environ['OPENAI_API_KEY']:
     
     # Display welcome message if no chat history is present
     if len(st.session_state.display_messages) < 1:
-        with st.chat_message('assistant', avatar="./mylesai_logo_no_text.png"):
+        with st.chat_message('assistant', avatar="./mylesai_logo_big.png"):
             st.markdown(welcome_message)
             st.session_state.display_messages.append({"role": "assistant", "content": welcome_message})
     

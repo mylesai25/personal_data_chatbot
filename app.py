@@ -209,7 +209,7 @@ def get_chat_engine(file):
         return chat_engine
 
 
-st.title("Personal Data Chatbot")
+st.title("MylesAI Personal Data Chatbot")
 
 st.sidebar.markdown("# Menu")
 st.sidebar.markdown('Please enter your API key and upload your document below to start the chatbot!')

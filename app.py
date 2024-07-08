@@ -230,13 +230,17 @@ if st.sidebar.button("Clear Chat"):
     st.session_state.display_messages = []
     st.session_state.conversation = None
     st.session_state.chat_history = None
-    st.session_state.file_name =  None
-    st.session_state.page = None
     st.session_state.chat_engine = None
     st.session_state.source_nodes = None
 
 if not st.session_state.uploaded_file:
     st.markdown(":red-background[Please Upload Files in the Sidebar]")
+    st.session_state.all_messages = []
+    st.session_state.display_messages = []
+    st.session_state.conversation = None
+    st.session_state.chat_history = None
+    st.session_state.chat_engine = None
+    st.session_state.source_nodes = None
 
 if not os.environ['OPENAI_API_KEY']:
     st.markdown(':red-background[Please Enter API Key]')

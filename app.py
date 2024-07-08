@@ -96,13 +96,13 @@ def extract_text_from_pdf(pdf_path):
     return full_text
 
 @st.cache_resource
-def get_llm(model_name):
+def get_llm(model_name, api_key=None):
     if model_name == 'gpt-4o':
-        return OpenAI(model='gpt-4o')
+        return OpenAI(model='gpt-4o', api_key=api_key, default_headers={'Authorization': f'Bearer {api_key}')
     elif model_name == 'gpt-4-turbo':
-        return OpenAI(model='gpt-4-turbo')
+        return OpenAI(model='gpt-4-turbo', api_key=api_key, default_headers={'Authorization': f'Bearer {api_key}')
     elif model_name == 'gpt-3.5-turbo':
-        return OpenAI(model='gpt-3.5-turbo')
+        return OpenAI(model='gpt-3.5-turbo', api_key=api_key, default_headers={'Authorization': f'Bearer {api_key}')
     elif model_name == 'sonnet-3.5':
         return Anthropic(model="claude-3-5-sonnet-20240620")
     elif model_name == 'opus-3':
@@ -126,8 +126,10 @@ def get_llm(model_name):
 @st.cache_resource
 def get_chat_engine(file, model_name):
   with st.spinner(text='Loading and indexing documents - hang tight!'):
-        
-        llm = get_llm(model_name)
+        if model_name in openai_models:
+            llm_get_llm(model_name, api_key=os.environ['OPENAI_API_KEY'])
+        else:
+            llm = get_llm(model_name)
         Settings.llm = llm
         embed_model = MistralAIEmbedding(model_name='mistral-embed', api_key=mistral_api_key)
         Settings.embed_model = embed_model

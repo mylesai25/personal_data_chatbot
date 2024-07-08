@@ -249,7 +249,7 @@ if st.session_state.uploaded_file and os.environ['OPENAI_API_KEY']:
     
     # Welcome message for the chatbot
     welcome_message = f"""
-    Hi! I've just become an expert on the document: :green-background['{st.session_state.uploaded_file.name}'] thanks to you! \nFeel free to ask me any question.
+    Hi! I am now an expert on the document: :green-background[{st.session_state.uploaded_file.name}] thanks to you! \nFeel free to ask me any question about the document.
     """
     
     # Initialize session state variables for chat messages

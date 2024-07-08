@@ -262,7 +262,7 @@ if st.session_state.uploaded_file and os.environ['OPENAI_API_KEY']:
     
     # Display chat history
     for message in st.session_state.display_messages:
-        if message["role"] == 'assistant:
+        if message["role"] == 'assistant':
             with st.chat_message(message["role"], avatar="./myles_ai_logo_medium.png"):
                 st.markdown(str(message["content"]))
         else:

@@ -127,7 +127,7 @@ def get_llm(model_name, api_key=None):
 def get_chat_engine(file, model_name):
   with st.spinner(text='Loading and indexing documents - hang tight!'):
         if model_name in openai_models:
-            llm_get_llm(model_name, api_key=os.environ['OPENAI_API_KEY'])
+            llm = get_llm(model_name, api_key=os.environ['OPENAI_API_KEY'])
         else:
             llm = get_llm(model_name)
         Settings.llm = llm

@@ -303,7 +303,7 @@ if st.session_state.uploaded_file and (os.environ['OPENAI_API_KEY'] or os.enviro
                 st.markdown(str(message["content"]))
         else:
             with st.chat_message(message["role"], avatar="./assets/chatbot_icon.webp"):
-                st.markdown(str(f'<p style="color:Blue">{message["content"]}<p>'))
+                st.markdown(f'<p style="color:Blue">{str(message["content"])}<p>')
     
     # Display welcome message if no chat history is present
     if len(st.session_state.display_messages) < 1:
@@ -313,8 +313,8 @@ if st.session_state.uploaded_file and (os.environ['OPENAI_API_KEY'] or os.enviro
     
     # Handle user input and generate response
     if prompt := st.chat_input("How can I help you?", max_chars=1000):
-        st.session_state.display_messages.append({"role": "user", "content": f'<p style="color:Blue">{prompt} <p>'})
-        st.session_state.all_messages.append({"role": "user", "content": f'<p style="color:Blue">{prompt} <p>'})
+        st.session_state.display_messages.append({"role": "user", "content": prompt})
+        st.session_state.all_messages.append({"role": "user", "content": prompt})
         with st.chat_message("user", avatar="./assets/chatbot_icon.webp"):
             st.markdown(prompt)
         # generates answer based on prompt

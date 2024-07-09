@@ -316,7 +316,7 @@ if st.session_state.uploaded_file and (os.environ['OPENAI_API_KEY'] or os.enviro
         st.session_state.display_messages.append({"role": "user", "content": prompt})
         st.session_state.all_messages.append({"role": "user", "content": prompt})
         with st.chat_message("user", avatar="./assets/chatbot_icon.webp"):
-            st.markdown(f'<p style="color:White">{str(prompt}<p>', unsafe_allow_html=True)
+            st.markdown(f'<p style="color:White">{str(prompt)}<p>', unsafe_allow_html=True)
         # generates answer based on prompt
         with st.spinner(text='Thinking...'):
             chat_history = [(ChatMessage(role=message['role'],content=message['content'])) for message in st.session_state.all_messages[:-1]]

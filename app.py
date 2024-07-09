@@ -248,9 +248,9 @@ if 'api_type' not in st.session_state:
 # area to input your API Key
 st.session_state.api_type = st.sidebar.radio("Select :orange[AI] Provider", ['Open:orange[AI]', 'Anthropic', 'Anyscale'], horizontal=True)
 if st.session_state.api_type:
-    if st.session_state.api_type == 'OpenAI':
+    if st.session_state.api_type == 'Open:orange[AI]':
         st.session_state.model_name = st.sidebar.selectbox('Which model would you like to use?', openai_models)
-        os.environ['OPENAI_API_KEY'] = st.sidebar.text_input('OpenAI API Key', type='password')
+        os.environ['OPENAI_API_KEY'] = st.sidebar.text_input('Open:orange[AI] API Key', type='password')
     elif st.session_state.api_type == 'Anthropic':
         st.session_state.model_name = st.sidebar.selectbox('Which model would you like to use?', anthropic_models)
         os.environ['ANTHROPIC_API_KEY'] = st.sidebar.text_input('Anthropic API Key', type='password')

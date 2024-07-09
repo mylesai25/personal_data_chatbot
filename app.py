@@ -232,10 +232,10 @@ def get_chat_engine(file, model_name):
         return chat_engine
 
 
-st.title(":green[Myles]:orange[AI] :green[Personal Data Chatbot]")
+st.title(":Myles:orange[AI] Personal Data Chatbot")
 
-st.sidebar.markdown("# :green[Menu]")
-st.sidebar.markdown('Please enter your API key and upload your document below to start the chatbot!')
+st.sidebar.markdown("# :white[Menu]")
+st.sidebar.markdown(':white[Please enter your API key and upload your document below to start the chatbot!]')
 
 if 'index' not in st.session_state:
     st.session_state.index = None

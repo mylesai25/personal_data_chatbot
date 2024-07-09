@@ -313,8 +313,8 @@ if st.session_state.uploaded_file and (os.environ['OPENAI_API_KEY'] or os.enviro
     
     # Handle user input and generate response
     if prompt := st.chat_input("How can I help you?", max_chars=1000):
-        st.session_state.display_messages.append({"role": "user", "content": ":white[" + prompt + "]"})
-        st.session_state.all_messages.append({"role": "user", "content": ":white[" + prompt + "]"})
+        st.session_state.display_messages.append({"role": "user", "content": f'<p style="color:White">{prompt} <p>'})
+        st.session_state.all_messages.append({"role": "user", "content": f'<p style="color:White">{prompt} <p>'})
         with st.chat_message("user", avatar="./assets/chatbot_icon.webp"):
             st.markdown(prompt)
         # generates answer based on prompt

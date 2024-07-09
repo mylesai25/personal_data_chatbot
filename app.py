@@ -303,7 +303,7 @@ if st.session_state.uploaded_file and (os.environ['OPENAI_API_KEY'] or os.enviro
                 st.markdown(str(message["content"]))
         else:
             with st.chat_message(message["role"], avatar="./assets/chatbot_icon.webp"):
-                st.markdown(f'<p style="color:White">{str(message["content"])}<p>', unsafe_allow_html=True)
+                st.markdown(f'<p style="color:Green">{str(message["content"])}<p>', unsafe_allow_html=True)
     
     # Display welcome message if no chat history is present
     if len(st.session_state.display_messages) < 1:

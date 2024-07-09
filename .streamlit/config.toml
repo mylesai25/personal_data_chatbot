@@ -5,4 +5,4 @@ showErrorDetails = false
 primaryColor = "#A1F1BB"
 textColor = 'white'
 backgroundColor = "black"
-secondaryBackgroundColor="#605E5E"
+secondaryBackgroundColor="gray"

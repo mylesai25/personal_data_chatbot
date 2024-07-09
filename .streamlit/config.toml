@@ -4,5 +4,5 @@ showErrorDetails = false
 [theme]
 primaryColor = "#A1F1BB"
 textColor = 'white'
-backgroundColor = "black"
-secondaryBackgroundColor="gray"
+backgroundColor = "#023020"
+secondaryBackgroundColor="black"

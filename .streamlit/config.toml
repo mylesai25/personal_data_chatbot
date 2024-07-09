@@ -1,8 +1,8 @@
 [client]
 showErrorDetails = false
 
-# [theme]
-# primaryColor = "#00D646"
-# textColor = "#00D646"
-# backgroundColor = "black"
-# secondaryBackgroundColor="black"
+[theme]
+primaryColor = "#A1F1BB"
+textColor = "#00D646"
+backgroundColor = "black"
+secondaryBackgroundColor="#605E5E"

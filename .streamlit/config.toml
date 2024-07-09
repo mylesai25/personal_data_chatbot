@@ -3,6 +3,5 @@ showErrorDetails = false
 
 [theme]
 primaryColor = "#A1F1BB"
-textColor = "#00D646"
 backgroundColor = "black"
 secondaryBackgroundColor="#605E5E"

@@ -59,7 +59,7 @@ from io import StringIO
 from pypdf import PdfReader
 
 # List of OpenAI Models
-openai_models = ['gpt-4o', 'gpt-4-turbo', 'gpt-3.5-turbo']
+openai_models = ['gpt-4o-mini', 'gpt-4o']
 # List of Anthropic Models
 anthropic_models = ['sonnet-3.5', 'opus-3', 'sonnet-3', 'haiku-3']
 # List of Anyscale Models
@@ -98,8 +98,8 @@ def extract_text_from_pdf(pdf_path):
 def get_llm(model_name, api_key=None):
     if model_name == 'gpt-4o':
         return OpenAI(model='gpt-4o', api_key=api_key, default_headers={'Authorization': f'Bearer {api_key}'})
-    elif model_name == 'gpt-4-turbo':
-        return OpenAI(model='gpt-4-turbo', api_key=api_key, default_headers={'Authorization': f'Bearer {api_key}'})
+    elif model_name == 'gpt-4o-mini':
+        return OpenAI(model='gpt-4o-mini', api_key=api_key, default_headers={'Authorization': f'Bearer {api_key}'})
     elif model_name == 'gpt-3.5-turbo':
         return OpenAI(model='gpt-3.5-turbo', api_key=api_key, default_headers={'Authorization': f'Bearer {api_key}'})
     elif model_name == 'sonnet-3.5':

@@ -26,7 +26,6 @@ from llama_index.core.schema import Document
 from llama_index.llms.anyscale import Anyscale
 from llama_index.llms.anthropic import Anthropic
 from llama_index.llms.openai import OpenAI
-from llama_index.core.indices.service_context import ServiceContext
 import urllib
 import nltk
 import tiktoken
